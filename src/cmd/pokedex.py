@@ -1,11 +1,12 @@
 from src.misc import service
+from src.context.pokemon_cli import PokemonCLI
 
-class PokemonError(Exception):
+class PokedexError(Exception):
     """Exception raised for errors in the Pokemon commands."""
     def __init__(self, message="No error message provided"):
-        super().__init__(message)
+        super().__init__(f"Pokedex error: {message}")
 
-class PokemonCommands:
+class PokedexCommands:
     def __init__(self):
         self._load_pokemon_names()
 
@@ -13,7 +14,7 @@ class PokemonCommands:
         """Initial load of all Pokemon names from the API"""
         self.pokemon_dict = service.get_initial_pokemon()
         if not self.pokemon_dict:
-            raise PokemonError("Failed to load Pokemon from PokeAPI")
+            raise PokedexError("Failed to load Pokemon from PokeAPI")
         self.pokemon_names = set(self.pokemon_dict.keys())
         
     def _search_pokemon(self, name):
@@ -37,3 +38,15 @@ class PokemonCommands:
             return list(self.pokemon_names)[:10]
         return [name for name in self.pokemon_names 
                 if name.startswith(text.lower())]
+    
+    def do_choose(self, arg):
+        """Choose a Pokemon: choose <pokemon>"""
+        if not arg:
+            print("Please provide a Pokemon name")
+            return
+        
+        if self._search_pokemon(arg):
+            PokemonCLI(arg).cmdloop()
+            self.prompt = self.original_prompt
+        else:
+            print(f"Pokemon not found: {arg}")

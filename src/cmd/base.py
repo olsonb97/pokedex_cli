@@ -30,22 +30,5 @@ class BaseCommands(Cmd):
         print(f"Unknown command: {line}")
 
     def do_exit(self, arg):
-        """Exit the Pokedex"""
-        print("Bye bye!")
+        """Go back a level"""
         return True
-
-    def do_help(self, arg):
-        """List available commands with 'help'"""
-        if arg:
-            super().do_help(arg)
-        else:
-            print("\nPokedex Commands:")
-            print("=" * 50)
-            
-            for category, commands in self.categories.items():
-                print(f"{category}:")
-                for cmd in commands:
-                    doc = getattr(self, f"do_{cmd}").__doc__ or ""
-                    print(f"    {cmd:<10} - {doc.split(":")[0]}")
-            
-            print("\nFor detailed help on a command, type: help <command>")
