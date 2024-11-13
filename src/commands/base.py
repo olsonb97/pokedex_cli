@@ -16,7 +16,7 @@ class BaseCommands(Cmd):
         except KeyError as e:
             print(f"Not found: {str(e)}")
         except Exception as e:
-            print(f"Unexpected error: {str(e)}")
+            print(e)
         return False
 
     def emptyline(self):

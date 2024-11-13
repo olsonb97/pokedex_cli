@@ -1,4 +1,5 @@
 import requests
+from src.config.config import API
 
 class ServiceError(Exception):
     def __init__(self, message="No error message provided"):
@@ -18,14 +19,14 @@ def try_again_wrapper(func):
                     return None
     return wrapper
 
-def get_pokemon_iterator(chunk_size: int = 100):
+def get_pokemon_iterator(chunk_size = 100):
     """Generator to fetch Pokemon data in chunks"""
     try:
         print("Catching Pokemon...")
         total = 0
         offset = 0
         while True:
-            url = f"https://pokeapi.co/api/v2/pokemon?offset={offset}&limit={chunk_size}"
+            url = f"{API.pokemon}?offset={offset}&limit={chunk_size}"
             response = requests.get(url)
             response.raise_for_status()
             

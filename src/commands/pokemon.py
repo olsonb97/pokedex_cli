@@ -1,4 +1,4 @@
-from src.rest import service
+from src.misc import service
 
 class PokemonError(Exception):
     """Exception raised for errors in the Pokemon commands."""

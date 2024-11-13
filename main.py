@@ -9,8 +9,8 @@ class PokedexCLI(BaseCommands, PokemonCommands):
 
     def __init__(self):
         try:
-            BaseCommands.__init__(self)  # Initialize Cmd parent
-            PokemonCommands.__init__(self)  # Initialize with service
+            BaseCommands.__init__(self) # Initialize Cmd parent
+            PokemonCommands.__init__(self) # Initialize Pokemon commands
         except Exception as e:
             print_exc()
             print(f"Initialization error: {str(e)}")
