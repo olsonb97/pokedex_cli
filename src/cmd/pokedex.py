@@ -2,7 +2,7 @@ from src.misc import service
 from src.context.pokemon_cli import PokemonCLI
 
 class PokedexError(Exception):
-    """Exception raised for errors in the Pokemon commands."""
+    """Exception raised for errors in the Pokedex commands."""
     def __init__(self, message="No error message provided"):
         super().__init__(f"Pokedex error: {message}")
 
@@ -35,7 +35,7 @@ class PokedexCommands:
     def complete_search(self, text, line, begidx, endidx):
         """Override Cmd.complete to autocomplete Pokemon names"""
         if not text:
-            return list(self.pokemon_names)[:10]
+            return list(self.pokemon_names)[:50]
         return [name for name in self.pokemon_names 
                 if name.startswith(text.lower())]
     
@@ -46,7 +46,9 @@ class PokedexCommands:
             return
         
         if self._search_pokemon(arg):
-            PokemonCLI(arg).cmdloop()
+            pokemon_url = self.pokemon_dict[arg]
+            PokemonCLI(arg, pokemon_url).cmdloop()
             self.prompt = self.original_prompt
+            self.pokemon = None
         else:
             print(f"Pokemon not found: {arg}")

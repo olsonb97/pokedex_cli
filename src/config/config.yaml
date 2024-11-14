@@ -1,5 +1,5 @@
 ---
-name: API
+name: Api
 base_url: "https://pokeapi.co/api/v2"
 endpoints:
   pokemon: "/pokemon"

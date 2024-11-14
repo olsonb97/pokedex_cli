@@ -49,4 +49,4 @@ def load_yaml(yaml_file_path):
     except Exception as e:
         raise ConfigError(f"Unknown error: {e}")
     
-API = load_yaml(Path(__file__).parent / "config.yaml")
+Api = load_yaml(Path(__file__).parent / "config.yaml")

@@ -1,5 +1,5 @@
 import requests
-from src.config.config import API
+from src.config.config import Api
 
 class ServiceError(Exception):
     def __init__(self, message="No error message provided"):
@@ -19,14 +19,14 @@ def try_again_wrapper(func):
                     return None
     return wrapper
 
-def get_pokemon_iterator(chunk_size = 100):
+def _get_pokemon_iterator(chunk_size = 100):
     """Generator to fetch Pokemon data in chunks"""
     try:
         print("Catching Pokemon...")
         total = 0
         offset = 0
         while True:
-            url = f"{API.pokemon}?offset={offset}&limit={chunk_size}"
+            url = f"{Api.pokemon}?offset={offset}&limit={chunk_size}"
             response = requests.get(url)
             response.raise_for_status()
             
@@ -52,8 +52,24 @@ def get_initial_pokemon():
     try:
         return {
             pokemon["name"]: pokemon["url"] 
-            for pokemon in get_pokemon_iterator()
+            for pokemon in _get_pokemon_iterator()
         }
         
+    except ServiceError as e:
+        raise ServiceError(f"Failed to process Pokemon data: {str(e)}")
+    
+
+@try_again_wrapper
+def get_pokemon_moves(pokemon_url):
+    """Create a dictionary of Pokemon names for quick lookup"""
+    try:
+        print("Learning moves...")
+        response = requests.get(pokemon_url)
+        response.raise_for_status()
+        pokemon_obj = response.json()
+        moves = [
+            move["move"]["name"] for move in pokemon_obj["moves"]
+        ]
+        return moves
     except ServiceError as e:
         raise ServiceError(f"Failed to process Pokemon data: {str(e)}")
