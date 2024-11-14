@@ -52,3 +52,10 @@ class PokedexCommands:
             self.pokemon = None
         else:
             print(f"Pokemon not found: {arg}")
+
+    def complete_choose(self, text, line, begidx, endidx):
+        """Override Cmd.complete to autocomplete Pokemon names"""
+        if not text:
+            return list(self.pokemon_names)[:50]
+        return [name for name in self.pokemon_names 
+                if name.startswith(text.lower())]

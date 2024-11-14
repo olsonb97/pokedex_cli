@@ -11,6 +11,6 @@ def pretty_print(items, columns=5):
         for col in range(columns):
             index = row + col * num_rows
             if index < len(sorted_items):
-                row_items.append(f"{sorted_items[index]:<25}")  # Adjust width as needed
+                row_items.append(f"{sorted_items[index]:<25}")
         print(" ".join(row_items))
     print()

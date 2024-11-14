@@ -1,10 +1,15 @@
 from traceback import print_exc
 from src.cmd.base import BaseCommands
-from src.cmd.pokedex import PokedexCommands
+from src.cmd.pokedex_cmd import PokedexCommands
 
 class PokedexCLI(BaseCommands, PokedexCommands):
     """CLI for the Pokedex"""
     intro = "Welcome to the Pokedex! Use '?' for help."
+    categories = {
+            "Pokemon": ["search", "choose"],
+            "System": ["exit", "help"]
+        }
+    
 
     def __init__(self):
         self.prompt= "pokedex> "

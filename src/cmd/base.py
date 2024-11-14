@@ -1,4 +1,5 @@
 from cmd import Cmd
+import pyreadline3
 
 class BaseCommands(Cmd):
     """Base class for all commands"""
