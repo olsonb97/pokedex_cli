@@ -3,10 +3,6 @@ import pyreadline3
 
 class BaseCommands(Cmd):
     """Base class for all commands"""
-    categories = {
-            "Pokemon": ["search"],
-            "System": ["exit"]
-        }
     
     def onecmd(self, line):
         """Override Cmd.onecmd to handle exceptions"""
