@@ -7,8 +7,6 @@ class PokemonError(Exception):
         super().__init__(f"Pokemon error: {message}")
 
 class PokemonCommands:
-    def __init__(self):
-        pass
 
     def do_moves(self, arg):
         """List all moves for the chosen Pokemon: moves"""
