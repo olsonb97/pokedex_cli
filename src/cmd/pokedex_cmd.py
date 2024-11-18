@@ -1,13 +1,15 @@
 from src.misc import service
 from src.context.pokemon_cli import PokemonCLI
+from src.cmd.base import BaseCommands
 
 class PokedexError(Exception):
     """Exception raised for errors in the Pokedex commands."""
     def __init__(self, message="No error message provided"):
         super().__init__(f"Pokedex error: {message}")
 
-class PokedexCommands:
+class PokedexCommands(BaseCommands):
     def __init__(self):
+        super().__init__()
         self._load_pokemon_names()
 
     def _load_pokemon_names(self):
@@ -23,6 +25,7 @@ class PokedexCommands:
         
     def do_search(self, arg):
         """Search for a Pokemon by name: search <pokemon>"""
+        arg = arg.lower().strip()
         if not arg:
             print("Please provide a Pokemon name")
             return
@@ -34,6 +37,7 @@ class PokedexCommands:
             
     def complete_search(self, text, line, begidx, endidx):
         """Override Cmd.complete to autocomplete Pokemon names"""
+        text = text.lower().strip()
         if not text:
             return list(self.pokemon_names)[:50]
         return [name for name in self.pokemon_names 
@@ -41,6 +45,7 @@ class PokedexCommands:
     
     def do_choose(self, arg):
         """Choose a Pokemon: choose <pokemon>"""
+        arg = arg.lower().strip()
         if not arg:
             print("Please provide a Pokemon name")
             return
@@ -55,6 +60,7 @@ class PokedexCommands:
 
     def complete_choose(self, text, line, begidx, endidx):
         """Override Cmd.complete to autocomplete Pokemon names"""
+        text = text.lower().strip()
         if not text:
             return list(self.pokemon_names)[:50]
         return [name for name in self.pokemon_names 

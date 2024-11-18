@@ -1,8 +1,7 @@
 from traceback import print_exc
-from src.cmd.base import BaseCommands
 from src.cmd.pokedex_cmd import PokedexCommands
 
-class PokedexCLI(BaseCommands, PokedexCommands):
+class PokedexCLI(PokedexCommands):
     """CLI for the Pokedex"""
     intro = "Welcome to the Pokedex! Use '?' for help."
     categories = {
@@ -15,10 +14,9 @@ class PokedexCLI(BaseCommands, PokedexCommands):
         self.prompt= "pokedex> "
         self.original_prompt = self.prompt
         try:
-            BaseCommands.__init__(self) # Initialize Cmd parent
-            PokedexCommands.__init__(self) # Initialize Pokedex commands
+            super().__init__() # Initialize Pokedex commands
         except Exception as e:
             print_exc()
-            print(f"Initialization error: {str(e)}")
+            print(f"\nInitialization error: {str(e)}")
             input("Press Enter to exit...")
             exit(1)

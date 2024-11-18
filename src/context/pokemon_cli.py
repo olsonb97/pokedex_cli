@@ -1,7 +1,6 @@
-from src.cmd.base import BaseCommands
 from src.cmd.pokemon_cmd import PokemonCommands
 
-class PokemonCLI(BaseCommands, PokemonCommands):
+class PokemonCLI(PokemonCommands):
     """CLI for a Pokemon"""
     categories = {
             "Pokemon": ["moves"],
@@ -9,7 +8,6 @@ class PokemonCLI(BaseCommands, PokemonCommands):
         }
 
     def __init__(self, pokemon, pokemon_url):
-        super().__init__()
-        self.pokemon_url = pokemon_url
-        self.pokemon = pokemon
-        self.prompt = f"{pokemon}> "
+        self.prompt= f"{pokemon}> "
+        self.original_prompt = self.prompt
+        super().__init__(pokemon, pokemon_url)
