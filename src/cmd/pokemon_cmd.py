@@ -1,4 +1,3 @@
-from src.misc.service import get_pokemon_moves
 from src.misc.util import pretty_print
 from src.cmd.base import BaseCommands
 
@@ -8,12 +7,15 @@ class PokemonError(Exception):
         super().__init__(f"Pokemon error: {message}")
 
 class PokemonCommands(BaseCommands):
-    def __init__(self, pokemon, pokemon_url):
+    def __init__(self, pokemon_name, pokemon_url, client):
         super().__init__()
-        self.doc_header = f"{pokemon.title()} commands:"
+        self.doc_header = f"{pokemon_name.title()} commands:"
         self.ruler = "="
-        self.pokemon = pokemon
+        self.pokemon_name = pokemon_name
         self.pokemon_url = pokemon_url
+        self.client = client
+        print(f"Catching {pokemon_name}...")
+        self.pokemon = self.client.get_pokemon(pokemon_name)
 
     def do_moves(self, arg):
         """List all moves for the chosen Pokemon: moves"""
@@ -21,5 +23,9 @@ class PokemonCommands(BaseCommands):
             print("Please use <moves> without arguments!")
             return
         else:
-            moves = get_pokemon_moves(self.pokemon_url)
+            moves = [
+                move["move"]["name"] for move in self.pokemon["moves"]
+            ]
             pretty_print(moves)
+
+            

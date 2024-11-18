@@ -1,7 +1,6 @@
-from src.misc import service
-from misc.client import PokeApiClient
 from src.context.pokemon_cli import PokemonCLI
 from src.cmd.base import BaseCommands
+from src.misc.util import pretty_print
 
 class PokedexError(Exception):
     """Exception raised for errors in the Pokedex commands."""
@@ -9,22 +8,15 @@ class PokedexError(Exception):
         super().__init__(f"Pokedex error: {message}")
 
 class PokedexCommands(BaseCommands):
-    def __init__(self):
+    def __init__(self, client):
         super().__init__()
         self.doc_header = "Pokedex commands:"
         self.ruler = "="
-        self._load_pokemon_names()
+        self.client = client
 
-    def _load_pokemon_names(self):
-        """Initial load of all Pokemon names from the API"""
-        self.pokemon_dict = service.get_initial_pokemon()
-        if not self.pokemon_dict:
-            raise PokedexError("Failed to load Pokemon from PokeAPI")
-        self.pokemon_names = set(self.pokemon_dict.keys())
-        
     def _search_pokemon(self, name):
         """Check if a Pokemon exists by name"""
-        return name.lower() in self.pokemon_names
+        return name.lower() in self.client.pokemon_names
         
     def do_search(self, arg):
         """Search for a Pokemon by name: search <pokemon>"""
@@ -42,8 +34,8 @@ class PokedexCommands(BaseCommands):
         """Override Cmd.complete to autocomplete Pokemon names"""
         text = text.lower().strip()
         if not text:
-            return list(self.pokemon_names)[:50]
-        return [name for name in self.pokemon_names 
+            return list(self.client.pokemon_names)[:50]
+        return [name for name in self.client.pokemon_names 
                 if name.startswith(text.lower())]
     
     def do_choose(self, arg):
@@ -54,10 +46,8 @@ class PokedexCommands(BaseCommands):
             return
         
         if self._search_pokemon(arg):
-            pokemon_url = self.pokemon_dict[arg]
-            PokemonCLI(arg, pokemon_url).cmdloop()
-            self.prompt = self.original_prompt
-            self.pokemon = None
+            pokemon_url = self.client.pokemon_dict[arg]
+            PokemonCLI(arg, pokemon_url, self.client).cmdloop()
         else:
             print(f"Pokemon not found: {arg}")
 
@@ -65,6 +55,22 @@ class PokedexCommands(BaseCommands):
         """Override Cmd.complete to autocomplete Pokemon names"""
         text = text.lower().strip()
         if not text:
-            return list(self.pokemon_names)[:50]
-        return [name for name in self.pokemon_names 
+            return list(self.client.pokemon_names)[:50]
+        return [name for name in self.client.pokemon_names 
                 if name.startswith(text.lower())]
+    
+    def do_moves(self, arg):
+        """List all moves for a Pokemon: moves <pokemon>"""
+        arg = arg.lower().strip()
+        if not arg:
+            print("Please provide a Pokemon name")
+            return
+        
+        if not self._search_pokemon(arg):
+            print(f"Pokemon not found: {arg}")
+            return
+        
+        print("Learning moves...")
+        pokemon = self.client.get_pokemon(arg)
+        moves = [move["move"]["name"] for move in pokemon["moves"]]
+        pretty_print(moves)
