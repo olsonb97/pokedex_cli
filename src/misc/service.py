@@ -1,5 +1,5 @@
 import requests
-from src.config.config import Api
+from misc.client import Api
 
 class ServiceError(Exception):
     def __init__(self, message="No error message provided"):

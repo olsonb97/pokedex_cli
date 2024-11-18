@@ -1,4 +1,5 @@
 from src.misc import service
+from misc.client import PokeApiClient
 from src.context.pokemon_cli import PokemonCLI
 from src.cmd.base import BaseCommands
 
