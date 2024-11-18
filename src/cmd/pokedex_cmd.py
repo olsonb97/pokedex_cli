@@ -10,6 +10,8 @@ class PokedexError(Exception):
 class PokedexCommands(BaseCommands):
     def __init__(self):
         super().__init__()
+        self.doc_header = "Pokedex commands:"
+        self.ruler = "="
         self._load_pokemon_names()
 
     def _load_pokemon_names(self):

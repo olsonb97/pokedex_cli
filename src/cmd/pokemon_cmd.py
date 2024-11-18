@@ -10,6 +10,8 @@ class PokemonError(Exception):
 class PokemonCommands(BaseCommands):
     def __init__(self, pokemon, pokemon_url):
         super().__init__()
+        self.doc_header = f"{pokemon.title()} commands:"
+        self.ruler = "="
         self.pokemon = pokemon
         self.pokemon_url = pokemon_url
 
