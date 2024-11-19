@@ -9,8 +9,6 @@ class PokemonError(Exception):
 class PokemonCommands(BaseCommands):
     def __init__(self, pokemon_name, pokemon_url, client):
         super().__init__()
-        self.doc_header = f"{pokemon_name.title()} commands:"
-        self.ruler = "="
         self.pokemon_name = pokemon_name
         self.pokemon_url = pokemon_url
         self.client = client
@@ -18,14 +16,32 @@ class PokemonCommands(BaseCommands):
         self.pokemon = self.client.get_pokemon(pokemon_name)
 
     def do_moves(self, arg):
-        """List all moves for the chosen Pokemon: moves"""
-        if arg:
-            print("Please use <moves> without arguments!")
-            return
-        else:
-            moves = [
-                move["move"]["name"] for move in self.pokemon["moves"]
-            ]
-            pretty_print(moves)
+        """\nList all moves for the chosen Pokemon: 'moves'
+Use 'moves -l' to list learned moves
+Use 'moves -m' to list machine moves
+Use 'moves -t' to list tutored moves
+Use 'moves -e' to list egg moves\n"""
+        arg = arg.strip().lower()
+        move_flags = {
+            "": None,
+            "-l": "level-up",
+            "-m": "machine",
+            "-t": "tutor",
+            "-e": "egg"
+        }
 
-            
+        if arg not in move_flags:
+            print("Unknown argument!")
+            return
+
+        method = move_flags[arg]
+        moves = [
+            move["move"]["name"] for move in self.pokemon["moves"]
+            if method is None or 
+            move["version_group_details"][-1]["move_learn_method"]["name"] == method
+        ]
+
+        if moves:
+            pretty_print(moves)
+        else:
+            print("No moves found!")

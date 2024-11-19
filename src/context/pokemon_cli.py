@@ -7,4 +7,6 @@ class PokemonCLI(PokemonCommands):
         self.client = client
         self.prompt= f"{pokemon}> "
         self.original_prompt = self.prompt
+        self.doc_header = f"{pokemon.title()} commands: (Use 'help' on any command for more info)"
+        self.ruler = "="
         super().__init__(pokemon, pokemon_url, self.client)

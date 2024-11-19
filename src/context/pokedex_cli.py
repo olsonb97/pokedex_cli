@@ -9,6 +9,8 @@ class PokedexCLI(PokedexCommands):
         self.prompt= "pokedex> "
         self.original_prompt = self.prompt
         self.client = client
+        self.doc_header = "Pokedex commands: (Use 'help' on any command for more info)"
+        self.ruler = "="
         try:
             super().__init__(self.client) # Initialize Pokedex commands
         except Exception as e:

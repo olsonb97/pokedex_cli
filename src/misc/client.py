@@ -5,6 +5,7 @@ class PokeApiError(Exception):
     def __init__(self, message="No error message provided"):
         super().__init__(f"Pokedex error: {message}")
 
+# Retry wrapper for PokeAPI requests
 def poke_api_retry(func):
     """Wrapper to handle PokeAPI retries"""
     def wrapper(*args, **kwargs):
@@ -18,6 +19,7 @@ def poke_api_retry(func):
                     raise PokeApiError(f"API request failed: {str(e)}")
     return wrapper
 
+# PokeAPI client
 class PokeApiClient:
     def __init__(self, base_url = "https://pokeapi.co/api/v2"):
         self.base_url = base_url.rstrip('/')
@@ -32,6 +34,7 @@ class PokeApiClient:
         self.pokemon_names = set(self.pokemon_dict.keys())
 
     @poke_api_retry
+    # Make a request to the PokeAPI
     def _make_request(self, endpoint, params = None):
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         response = self.session.get(url, params=params)
@@ -42,6 +45,7 @@ class PokeApiClient:
     def get_pokemon(self, name_or_id):
         return self._make_request(f"pokemon/{name_or_id}")
     
+    # Pokemon list endpoint
     def get_pokemon_list(self, limit= 20, offset= 0):
         return self._make_request("pokemon", params={"limit": limit, "offset": offset})
 
@@ -53,6 +57,7 @@ class PokeApiClient:
     def get_item(self, name_or_id):
         return self._make_request(f"item/{name_or_id}")
     
+    # Generator to fetch Pokemon data in chunks
     def _get_pokemon_iterator(self, chunk_size = 100):
         """Generator to fetch Pokemon data in chunks"""
         print("Catching Pokemon...")
@@ -72,6 +77,7 @@ class PokeApiClient:
             print(f"Caught {total} Pokemon...")
         print("Caught em all!")
 
+    # Create a dictionary of {Pokemon: url}
     def get_initial_pokemon(self):
         """Create a dictionary of Pokemon names for quick lookup"""
         return {
