@@ -7,7 +7,6 @@ class PokedexCLI(PokedexCommands):
 
     def __init__(self, client):
         self.prompt= "pokedex> "
-        self.original_prompt = self.prompt
         self.client = client
         self.doc_header = "Pokedex commands: (Use 'help' on any command for more info)"
         self.ruler = "="

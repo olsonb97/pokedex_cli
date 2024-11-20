@@ -25,6 +25,7 @@ class PokeApiClient:
         self.base_url = base_url.rstrip('/')
         self.session = requests.Session()
         self._load_pokemon()
+        self._load_versions()
 
     def _load_pokemon(self):
         """Initial load of all Pokemon names from the API"""
@@ -32,6 +33,13 @@ class PokeApiClient:
         if not self.pokemon_dict:
             raise PokeApiError("Failed to load Pokemon from PokeAPI")
         self.pokemon_names = set(self.pokemon_dict.keys())
+
+    def _load_versions(self):
+        """Initial load of all available versions from the API"""
+        response = self.get_versions()
+        self.versions = {version["name"] for version in response["results"]}
+        if not self.versions:
+            raise PokeApiError("Failed to load versions from PokeAPI")
 
     @poke_api_retry
     # Make a request to the PokeAPI
@@ -84,3 +92,7 @@ class PokeApiClient:
             pokemon["name"]: pokemon["url"] 
             for pokemon in self._get_pokemon_iterator()
         }
+    
+    # Get a list of available versions
+    def get_versions(self):
+        return self._make_request("version-group?limit=100")
