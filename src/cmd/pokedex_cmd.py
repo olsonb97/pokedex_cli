@@ -45,7 +45,7 @@ class PokedexCommands(BaseCommands):
         
         if self._search_pokemon(arg):
             pokemon_url = self.client.pokemon_dict[arg]
-            PokemonCLI(arg, pokemon_url, self.client).cmdloop()
+            PokemonCLI(arg, pokemon_url, self.client)
         else:
             print(f"Pokemon not found: {arg}")
 

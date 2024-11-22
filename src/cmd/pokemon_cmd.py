@@ -16,7 +16,17 @@ class PokemonCommands(BaseCommands):
         self.pokemon = self.client.get_pokemon(pokemon_name)
         self.available_versions = self._get_available_versions()
         self.version = None
-        self.prompt_version()
+        self.cmdloop()
+
+    def precmd(self, line):
+       """Override precmd so that version is set before anything else."""
+       if self.version is None:
+           allowed_commands = ['version', 'help', 'exit', 'EOF']
+           command = line.split()[0] if line.strip() else ''
+           if command not in allowed_commands:
+               print("You must set the game version first using the 'version' command.")
+               return ''
+       return line
 
     def _get_available_versions(self):
         """Retrieve available versions based on the Pokémon's moves"""
@@ -25,28 +35,17 @@ class PokemonCommands(BaseCommands):
             for move in self.pokemon["moves"]
             for detail in move["version_group_details"]
         }
-
-        # Find common versions
         return list(self.client.versions.intersection(version_groups))
-
-    def prompt_version(self):
-        """Prompt the user to enter a valid game version."""
-        print(f"Available game versions for {self.pokemon_name}:")
-        pretty_print(self.available_versions)
-        while not self.version:
-            try:
-                user_input = input("Please enter a game version to use: ").strip().lower()
-                self.do_version(user_input)
-            except KeyboardInterrupt:
-                print("\nInitialization aborted by user.")
-                raise PokemonError("Version selection aborted.")
 
     def complete_version(self, text, line, begidx, endidx):
         """Provide auto-completion for game versions."""
-        return [version for version in self.client.versions if version.startswith(text)]
+        return [version for version in self.available_versions if version.startswith(text)]
 
     def do_version(self, arg):
-        """\nChoose a game version: 'version scarlet-violet'"""
+        """Choose a game version: 'version scarlet-violet'"""
+        if not arg:
+            print(f"Current game version: {self.version}")
+            return
         arg = arg.strip().lower()
         if arg not in self.available_versions:
             print("Unknown version!")
@@ -77,6 +76,7 @@ Use 'moves egg' to list egg moves\n"""
         method = move_flags[arg]
         moves = []
         for move in self.pokemon["moves"]:
+            # Lengthy way to check if the move is available in the chosen version
             for move_details in move["version_group_details"]:
                 if (method is None or move_details["move_learn_method"]["name"] == method) and \
                     move_details["version_group"]["name"] == self.version: # Verify version
