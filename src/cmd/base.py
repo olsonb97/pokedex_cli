@@ -1,5 +1,7 @@
 from cmd import Cmd
+from traceback import print_exc
 import pyreadline3
+import requests
 
 class BaseCommands(Cmd):
     """Base class for all commands"""
@@ -31,8 +33,10 @@ class BaseCommands(Cmd):
             print(f"Invalid value: {str(e)}")
         except KeyError as e:
             print(f"Not found: {str(e)}")
+        except requests.RequestException as e:
+            pass
         except Exception as e:
-            print(e)
+            print_exc()
         return False
 
     def emptyline(self):

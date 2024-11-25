@@ -1,5 +1,6 @@
-from src.misc.util import pretty_print
+from src.misc.util import pretty_print_list, pretty_print_dict
 from src.cmd.base import BaseCommands
+import yaml
 
 class PokemonError(Exception):
     """Exception raised for errors in the Pokemon commands."""
@@ -53,6 +54,32 @@ class PokemonCommands(BaseCommands):
         print(f"Game version set to {arg}!")
         self.version = arg
 
+    def do_move(self, arg):
+        """Get details about a move: 'move <move name>'"""
+        if not arg:
+            print("Please provide a move!")
+            return
+        arg = arg.strip().lower()
+        found_move = None
+        for move in self.pokemon["moves"]:
+            if move["move"]["name"] == arg:
+                for detail in move["version_group_details"]:
+                    if detail["version_group"]["name"] == self.version:
+                        found_move = move["move"]["name"]
+                        details = detail
+                        break
+                if found_move:
+                    break
+        if not found_move:
+            print("Unknown move for this pokemon or game version!")
+            return
+        move_build = self.client.get_usable_move(found_move)
+        move_build | {
+            "level_learned_at": details["level_learned_at"],
+            "move_learn_method": details["move_learn_method"]["name"]
+        }
+        pretty_print_dict(move_build, found_move)
+
     def do_moves(self, arg):
         """\nList all moves for the chosen Pokemon: 'moves'
 Available methods:
@@ -85,6 +112,6 @@ Use 'moves egg' to list egg moves\n"""
 
         if moves:
             print(f"Moves for {self.pokemon_name} in {self.version} with method '{method}':")
-            pretty_print(moves)
+            pretty_print_list(moves)
         else:
             print("No moves found! Check version or method.")

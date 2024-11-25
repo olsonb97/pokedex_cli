@@ -1,6 +1,6 @@
 from src.context.pokemon_cli import PokemonCLI
 from src.cmd.base import BaseCommands
-from src.misc.util import pretty_print
+from src.misc.util import pretty_print_list, pretty_print_dict
 
 class PokedexError(Exception):
     """Exception raised for errors in the Pokedex commands."""
@@ -35,6 +35,15 @@ class PokedexCommands(BaseCommands):
             return list(self.client.pokemon_names)[:50]
         return [name for name in self.client.pokemon_names 
                 if name.startswith(text.lower())]
+    
+    def do_move(self, arg):
+        """Get details about a move: 'move <move name>'"""
+        if not arg:
+            print("Please provide a move!")
+            return
+        arg = arg.strip().lower()
+        move_dict = self.client.get_usable_move(arg)
+        pretty_print_dict(move_dict, arg)
     
     def do_choose(self, arg):
         """Choose a Pokemon: choose <pokemon>"""
@@ -71,4 +80,4 @@ class PokedexCommands(BaseCommands):
         print("Learning moves...")
         pokemon = self.client.get_pokemon(arg)
         moves = [move["move"]["name"] for move in pokemon["moves"]]
-        pretty_print(moves)
+        pretty_print_list(moves)

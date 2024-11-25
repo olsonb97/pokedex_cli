@@ -1,4 +1,5 @@
 import requests
+from src.misc.util import pretty_string
 
 class PokeApiError(Exception):
     """Exception raised for errors in the PokeAPI."""
@@ -13,10 +14,9 @@ def poke_api_retry(func):
             try:
                 return func(*args, **kwargs)
             except requests.RequestException as e:
-                print(f"API Error: {str(e)}")
-                choice = input("Connection failed! Retry API request? (y/n): ")
+                choice = input(f"{str(e)} - Retry API request? (y/n): ")
                 if choice.lower().strip() != "y":
-                    raise PokeApiError(f"API request failed: {str(e)}")
+                    raise e
     return wrapper
 
 # PokeAPI client
@@ -96,3 +96,54 @@ class PokeApiClient:
     # Get a list of available versions
     def get_versions(self):
         return self._make_request("version-group?limit=100")
+    
+    def get_move(self, name_or_id):
+        return self._make_request(f"move/{name_or_id}")
+
+    def get_usable_move(self, name_or_id):
+        move = self.get_move(name_or_id)
+        move["damage_class"] = move["damage_class"]["name"]
+        move["effects"] = [effect["short_effect"] for effect in move["effect_entries"]]
+        keys_to_del = [
+            "contest_combos",
+            "contest_effect",
+            "contest_type",
+            "effect_changes",
+            "effect_entries",
+            "flavor_text_entries",
+            "generation",
+            "id",
+            "learned_by_pokemon",
+            "meta",
+            "name",
+            "names",
+            "past_values",
+            "stat_changes",
+            "super_contest_effect",
+            "target",
+            "type"
+        ]
+        for key in keys_to_del:
+            move.pop(key, None)
+        if move["effect_chance"] is None:
+            move.pop("effect_chance", None)
+        move["machines"] = self._prettify_machines(move["machines"])
+        return move
+    
+    def get_machine(self, id):
+        return self._make_request(f"machine/{id}")
+    
+    def _prettify_machines(self, mach_list):
+        new_machines = {}
+        for machine in mach_list:
+            id = machine["machine"]["url"].split("/")[-2]
+            api_dict = self.get_machine(id)
+            name = api_dict["item"]["name"]
+            game = pretty_string(api_dict["version_group"]["name"])
+            new_machine = {
+                name: {
+                    "Game": game
+                }
+            }
+            new_machines.update(new_machine)
+        return new_machines
