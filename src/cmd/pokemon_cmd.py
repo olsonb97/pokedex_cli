@@ -111,7 +111,7 @@ Use 'moves egg' to list egg moves\n"""
                     break  # Continue once a match is found
 
         if moves:
-            print(f"Moves for {self.pokemon_name} in {self.version} with method '{method}':")
+            print(f"Moves for {self.pokemon_name} in {self.version}{f" with method '{method}'" if method else ""}:")
             pretty_print_list(moves)
         else:
             print("No moves found! Check version or method.")
