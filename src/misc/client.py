@@ -1,10 +1,12 @@
 import requests
+from urllib3.exceptions import InsecureRequestWarning
+from urllib3 import disable_warnings
 from src.misc.util import pretty_string
 
 class PokeApiError(Exception):
     """Exception raised for errors in the PokeAPI."""
     def __init__(self, message="No error message provided"):
-        super().__init__(f"Pokedex error: {message}")
+        super().__init__(f"API error: {message}")
 
 # Retry wrapper for PokeAPI requests
 def poke_api_retry(func):
@@ -21,9 +23,11 @@ def poke_api_retry(func):
 
 # PokeAPI client
 class PokeApiClient:
-    def __init__(self, base_url = "https://pokeapi.co/api/v2"):
+    def __init__(self, base_url="https://pokeapi.co/api/v2"):
         self.base_url = base_url.rstrip('/')
         self.session = requests.Session()
+        self.verify_ssl = True
+        self.ssl_warnings_suppressed = False
         self._load_pokemon()
         self._load_versions()
 
@@ -41,13 +45,43 @@ class PokeApiClient:
         if not self.versions:
             raise PokeApiError("Failed to load versions from PokeAPI")
 
+    def _handle_ssl_error(self):
+        """Handle SSL errors dynamically"""
+        if not self.verify_ssl:
+            return  # SSL verification already disabled
+        print("-"*50)
+        while True:
+            choice = input("SSL verification failed. Disable SSL verification for all future requests? (y/n): ").lower().strip()
+            if choice == "y":
+                self.verify_ssl = False
+                self.ssl_warnings_suppressed = True
+                print("SSL verification disabled for all future requests.")
+                print("-"*50)
+                break
+            elif choice == "n":
+                print("-"*50)
+                raise requests.RequestException("SSL verification is required but failed.")
+            else:
+                print("Invalid choice.")
+
+    def _suppress_ssl_warnings(self):
+        """Suppress SSL warnings if warnings are disabled"""
+        if self.ssl_warnings_suppressed:
+            disable_warnings(InsecureRequestWarning)
+
     @poke_api_retry
-    # Make a request to the PokeAPI
-    def _make_request(self, endpoint, params = None):
+    def _make_request(self, endpoint, params=None):
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
-        response = self.session.get(url, params=params)
-        response.raise_for_status()
-        return response.json()
+        self._suppress_ssl_warnings()  # Suppress warnings if needed
+
+        try:
+            response = self.session.get(url, params=params, verify=self.verify_ssl)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.SSLError as e:
+            print(f"SSL Error: {e}")
+            self._handle_ssl_error()
+            return self._make_request(endpoint, params)  # Retry with updated SSL
 
     # Pokemon endpoints
     def get_pokemon(self, name_or_id):
@@ -134,6 +168,8 @@ class PokeApiClient:
         return self._make_request(f"machine/{id}")
     
     def _prettify_machines(self, mach_list):
+        if not mach_list:
+            return None
         new_machines = {}
         for machine in mach_list:
             id = machine["machine"]["url"].split("/")[-2]

@@ -29,7 +29,7 @@ class PokedexCommands(BaseCommands):
             print(f"Pokemon not found: {arg}")
             
     def complete_search(self, text, line, begidx, endidx):
-        """Override Cmd.complete to autocomplete Pokemon names"""
+        """Autocomplete Pokemon names for search"""
         text = text.lower().strip()
         if not text:
             return list(self.client.pokemon_names)[:50]
@@ -51,7 +51,7 @@ class PokedexCommands(BaseCommands):
         if not arg:
             print("Please provide a Pokemon name")
             return
-        
+
         if self._search_pokemon(arg):
             pokemon_url = self.client.pokemon_dict[arg]
             PokemonCLI(arg, pokemon_url, self.client)
@@ -59,7 +59,7 @@ class PokedexCommands(BaseCommands):
             print(f"Pokemon not found: {arg}")
 
     def complete_choose(self, text, line, begidx, endidx):
-        """Override Cmd.complete to autocomplete Pokemon names"""
+        """Autocomplete Pokemon names for choose"""
         text = text.lower().strip()
         if not text:
             return list(self.client.pokemon_names)[:50]

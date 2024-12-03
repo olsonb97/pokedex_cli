@@ -1,19 +1,18 @@
 from cmd import Cmd
 from traceback import print_exc
-import pyreadline3
 import requests
 
 class BaseCommands(Cmd):
     """Base class for all commands"""
     
     def onecmd(self, line):
-        """Override Cmd.onecmd to handle exceptions and provide help"""
+        """Override Cmd.onecmd to handle exceptions and expand help"""
         try:
             stripped_line = line.strip()
             if not stripped_line:
                 return super().onecmd(line)
 
-            if stripped_line.endswith(('?', 'help', '/?')):
+            if stripped_line.endswith(('?', 'help', '/?', ' -h')):
                 parts = stripped_line[:-1].strip().split()
                 if not parts:
                     return super().onecmd(line)

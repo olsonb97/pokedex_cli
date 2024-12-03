@@ -35,7 +35,7 @@ def rename_dict(d):
     
 def pretty_print_dict(d, message=""):
     d = rename_dict(d)
-    dict_string = yaml.dump(d, default_flow_style=False).rstrip()
+    dict_string = yaml.dump(d, default_flow_style=False, width=70).rstrip()
     max_len = max(len(line) for line in dict_string.splitlines()) if dict_string else 0
     if not message:
         header = "-" * max_len
@@ -48,3 +48,8 @@ def pretty_print_dict(d, message=""):
 
     footer = "-" * max_len
     print(header, dict_string, footer, sep="\n")
+
+def pretty_message(msg, num=70):
+    print("-"*num)
+    print(msg)
+    print("-"*num)
