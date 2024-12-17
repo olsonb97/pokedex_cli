@@ -1,4 +1,7 @@
 import yaml
+from colorama import init, Fore, Style
+
+init(autoreset=True)
 
 def pretty_print_list(items, columns=5):
     sorted_items = sorted(items)
@@ -23,33 +26,58 @@ def pretty_string(string):
     return ' '.join(word.capitalize() for word in string.split())
 
 def rename_dict(d):
-    """Recursively rename all string keys and values in a dictionary."""
+    """Recursively rename only the string keys in a dictionary."""
     if isinstance(d, dict):
         return {rename_dict(pretty_string(k)): rename_dict(v) for k, v in d.items()}
     elif isinstance(d, list):
         return [rename_dict(item) for item in d]
-    elif isinstance(d, str):
-        return pretty_string(d)
     else:
         return d
     
 def pretty_print_dict(d, message=""):
     d = rename_dict(d)
-    dict_string = yaml.dump(d, default_flow_style=False, width=70).rstrip()
-    max_len = max(len(line) for line in dict_string.splitlines()) if dict_string else 0
-    if not message:
-        header = "-" * max_len
-    else:
+    dict_string = yaml.dump(d, width=70).rstrip()
+    max_len = max((len(line) for line in dict_string.splitlines()), default=0)
+    if message:
         message = pretty_string(message)
-        mes_len = len(message)
-        pre_header = "-" * (max_len - mes_len)
-        mid = max_len // 2
-        header = pre_header[:mid] + message + pre_header[mid:]
-
-    footer = "-" * max_len
-    print(header, dict_string, footer, sep="\n")
+        max_len = max(max_len, len(message) + 4)
+        header = message.center(max_len, '-')
+    else:
+        header = '-' * max_len
+    footer = '-' * max_len
+    print(header)
+    print(dict_string)
+    print(footer)
 
 def pretty_message(msg, num=70):
     print("-"*num)
     print(msg)
     print("-"*num)
+    
+def highlight_value(value, high, low, width):
+    if not isinstance(value, (int, float)):
+        return str(value).ljust(width)
+    color = (
+        Fore.YELLOW if (value == high and value == low) else
+        Fore.GREEN if value == high else
+        Fore.RED if value == low else ""
+    )
+    return f"{color}{str(value).ljust(width)}{Style.RESET_ALL}" 
+
+def pretty_compare(stats_dict):
+    pokemons = list(stats_dict.keys())
+    stats = next(iter(stats_dict.values())).keys()
+    col_width = max(max(len(p) for p in pokemons), 8)
+
+    header = f"{'Base Stats'.ljust(15)} | {' | '.join(p.ljust(col_width) for p in pokemons)}"
+    print(f"{header}\n{'-' * len(header)}")
+
+    for stat in stats:
+        values = [stats_dict[p][stat] for p in pokemons]
+        numeric_values = [v for v in values if isinstance(v, (int, float))]
+        high, low = (max(numeric_values), min(numeric_values)) if numeric_values else (None, None)
+
+        row = f"{stat.ljust(15)} | " + " | ".join(
+            highlight_value(stats_dict[p][stat], high, low, col_width) for p in pokemons
+        )
+        print(row)

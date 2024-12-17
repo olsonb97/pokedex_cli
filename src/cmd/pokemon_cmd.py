@@ -14,22 +14,19 @@ class PokemonCommands(BaseCommands):
         self.client = client
         print(f"Catching {pokemon_name}...")
         self.pokemon = self.client.get_pokemon(pokemon_name)
+        self.stats = self.client.get_stats(pokemon_name)
         self.available_versions = self._get_available_versions()
-        self._intro()
         self.version = None
-        self.cmdloop()
-
-    def _intro(self):
-        pretty_message("Must choose game version before using commands.\nAvailable versions:")
-        pretty_print_list(self.available_versions)
 
     def precmd(self, line):
        """Override precmd so that version is set before anything else."""
        if self.version is None:
-           allowed_commands = ['version', 'help', 'exit', 'EOF']
+           disallowed_commands = ['move', 'moves']
            command = line.split()[0] if line.strip() else ''
-           if command not in allowed_commands:
-               print("You must set the game version first using the 'version' command.")
+           if command in disallowed_commands:
+               pretty_message("""This command requires setting the game version first using the 'version' command.
+\nAvailabe versions:""")
+               pretty_print_list(self.available_versions)
                return ''
        return line
 
@@ -122,3 +119,7 @@ Use 'moves egg' to list egg moves\n"""
             pretty_print_list(moves)
         else:
             print("No moves found! Check version or method.")
+
+    def do_stats(self, arg):
+        """List the stats for chosen pokemon of chosen game version"""
+        pretty_print_dict(self.stats)

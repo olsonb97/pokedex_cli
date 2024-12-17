@@ -183,3 +183,19 @@ class PokeApiClient:
             }
             new_machines.update(new_machine)
         return new_machines
+
+    def get_stats(self, id):
+        pokemon = self.get_pokemon(id)
+        stats = pokemon["stats"]
+        types = pokemon["types"]
+        totals = {}
+
+        for stat in stats:
+            name = pretty_string(stat["stat"]["name"])
+            num = stat["base_stat"]
+            totals[name] = num
+
+        for i, type in enumerate(types):
+            totals[f"Type {i+1}"] = pretty_string(type["type"]["name"])
+
+        return totals

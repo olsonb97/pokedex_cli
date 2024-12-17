@@ -12,10 +12,24 @@ class BaseCommands(Cmd):
             if not stripped_line:
                 return super().onecmd(line)
 
-            if stripped_line.endswith(('?', 'help', '/?', ' -h')):
-                parts = stripped_line[:-1].strip().split()
-                if not parts:
+            # Possible help suffixes
+            help_suffixes = ('help', '/?', ' -h', '?')
+            matched_suffix = None
+
+            # Find which suffix matches
+            for suffix in help_suffixes:
+                if stripped_line.lower().endswith(suffix):
+                    matched_suffix = suffix
+                    break
+
+            if matched_suffix:
+                # Remove the matched suffix from the line
+                command_part = stripped_line[:-len(matched_suffix)].strip()
+                if not command_part:
                     return super().onecmd(line)
+                
+                # Get the docstring for the command requested
+                parts = command_part.split()
                 command = parts[0]
                 method_name = f"do_{command}"
                 method = getattr(self, method_name, None)
@@ -24,18 +38,19 @@ class BaseCommands(Cmd):
                     print(method.__doc__)
                 else:
                     print(f"No help available for '{command}'.")
-                return False
+                return False  # Indicate that the command was handled
+
             else:
                 return super().onecmd(line)
-            
+
         except ValueError as e:
             print(f"Invalid value: {str(e)}")
         except KeyError as e:
             print(f"Not found: {str(e)}")
         except requests.RequestException as e:
-            pass
-        except Exception as e:
-            print_exc()
+            print(f"Request error: {str(e)}")
+        except Exception:
+            print_exc()  # Print the full traceback as last resort
         return False
 
     def emptyline(self):
