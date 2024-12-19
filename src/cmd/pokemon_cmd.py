@@ -120,11 +120,9 @@ Use 'moves egg' to list egg moves\n"""
         else:
             print("No moves found! Check version or method.")
 
+    @BaseCommands.noargs
     def do_stats(self, arg):
         """List the stats for chosen pokemon of chosen game version"""
-        if arg:
-            print("Argument not supported!")
-            return
         pretty_print_dict(self.stats, f"{self.pokemon_name} Stats")
 
     @BaseCommands.noargs

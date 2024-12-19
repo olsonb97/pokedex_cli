@@ -122,6 +122,21 @@ class PokedexCommands(BaseCommands):
         moves = [move["move"]["name"] for move in pokemon["moves"]]
         pretty_print_list(moves)
 
+    def complete_moves(self, text, line, begidx, endidx):
+        """Autocomplete Pokemon names for moves"""
+        text = text.lower().strip().split()
+        if not text[0]:
+            return list(self.client.pokemon_names)[:50]
+        for pokemon in text:
+            if not self._is_pokemon(pokemon):
+                names = [name for name in self.client.pokemon_names 
+                if name.startswith(pokemon.lower())]
+                if not names:
+                    print(f"{pokemon} is not a valid Pokemon!")
+                    return
+                else:
+                    return names
+
     def do_ability(self, arg):
         """Get details for an ability: ability <ability>"""
         arg = arg.lower().strip()
@@ -141,3 +156,18 @@ class PokedexCommands(BaseCommands):
 
         stats = self.client.get_stats(arg)
         pretty_print_dict(stats, f"{pretty_string(arg)} Stats")
+
+    def complete_stats(self, text, line, begidx, endidx):
+        """Autocomplete Pokemon names for stats"""
+        text = text.lower().strip().split()
+        if not text[0]:
+            return list(self.client.pokemon_names)[:50]
+        for pokemon in text:
+            if not self._is_pokemon(pokemon):
+                names = [name for name in self.client.pokemon_names 
+                if name.startswith(pokemon.lower())]
+                if not names:
+                    print(f"{pokemon} is not a valid Pokemon!")
+                    return
+                else:
+                    return names
