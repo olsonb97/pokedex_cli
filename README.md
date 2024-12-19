@@ -1,5 +1,5 @@
 # Pokedex CLI
-
+![Pokedex CLI Demo](pics/pokedex.png)
 ## Overview
 
 Pokedex CLI is an interactive command-line tool that acts as a Pokedex by interacting with the PokeAPI. It features tab-to-autocomplete, stat comparisons, move lookups, and additional functionalities. Note: This project is still under development.
