@@ -1,4 +1,3 @@
-from tabulate import tabulate
 from src.context.pokemon_cli import PokemonCLI
 from src.cmd.base import BaseCommands
 from src.misc.util import *
@@ -59,6 +58,14 @@ class PokedexCommands(BaseCommands):
         else:
             print(f"Pokemon not found: {arg}")
 
+    def complete_choose(self, text, line, begidx, endidx):
+        """Autocomplete Pokemon names for choose"""
+        text = text.lower().strip()
+        if not text:
+            return list(self.client.pokemon_names)[:50]
+        return [name for name in self.client.pokemon_names 
+                if name.startswith(text.lower())]
+
     def do_compare(self, args):
         """Compare two stats of two or more pokemon: compare <pokemon1> <pokemon2> ..."""
         pokemon_names = [poke.lower().strip() for poke in args.split()]
@@ -84,13 +91,20 @@ class PokedexCommands(BaseCommands):
 
         pretty_compare(pokemon_stats)
 
-    def complete_choose(self, text, line, begidx, endidx):
-        """Autocomplete Pokemon names for choose"""
-        text = text.lower().strip()
-        if not text:
+    def complete_compare(self, text, line, begidx, endidx):
+        """Autocomplete Pokemon names for search"""
+        text = text.lower().strip().split()
+        if not text[0]:
             return list(self.client.pokemon_names)[:50]
-        return [name for name in self.client.pokemon_names 
-                if name.startswith(text.lower())]
+        for pokemon in text:
+            if not self._is_pokemon(pokemon):
+                names = [name for name in self.client.pokemon_names 
+                if name.startswith(pokemon.lower())]
+                if not names:
+                    print(f"{pokemon} is not a valid Pokemon!")
+                    return
+                else:
+                    return names
     
     def do_moves(self, arg):
         """List all moves for a Pokemon: moves <pokemon>"""
