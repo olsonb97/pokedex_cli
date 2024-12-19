@@ -21,7 +21,7 @@ class PokemonCommands(BaseCommands):
     def precmd(self, line):
        """Override precmd so that version is set before anything else."""
        if self.version is None:
-           disallowed_commands = ['move', 'moves']
+           disallowed_commands = ['move', 'moves', 'abilities']
            command = line.split()[0] if line.strip() else ''
            if command in disallowed_commands:
                pretty_message("""This command requires setting the game version first using the 'version' command.
@@ -122,4 +122,28 @@ Use 'moves egg' to list egg moves\n"""
 
     def do_stats(self, arg):
         """List the stats for chosen pokemon of chosen game version"""
-        pretty_print_dict(self.stats)
+        if arg:
+            print("Argument not supported!")
+            return
+        pretty_print_dict(self.stats, f"{self.pokemon_name} Stats")
+
+    @BaseCommands.noargs
+    def do_abilities(self, arg):
+        abilities = self.pokemon["abilities"]
+        totals = {}
+
+        for ability in abilities:
+            name = ability["ability"]["name"]
+            num = ability["slot"]
+            hidden = ability["is_hidden"]
+            effects = self.client.get_ability(name)
+            if not (desc := effects.get(self.version, None)):
+                print("No abilities found! Try changing game version.")
+                return
+            totals[pretty_string(name)] = {
+                "Ability Slot": num,
+                "Hidden Ability": hidden,
+                "Effect": desc
+            }
+
+        pretty_print_dict(totals, f"{self.pokemon_name} Abilities")

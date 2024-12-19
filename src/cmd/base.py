@@ -4,7 +4,16 @@ import requests
 
 class BaseCommands(Cmd):
     """Base class for all commands"""
-    
+
+    def noargs(func):
+        """Decorator to ensure a command method does not accept arguments."""
+        def wrapper(self, arg):
+            if arg.strip():
+                print(f"This command does not accept arguments.")
+                return
+            return func(self, arg)
+        return wrapper
+        
     def onecmd(self, line):
         """Override Cmd.onecmd to handle exceptions and expand help"""
         try:
@@ -49,8 +58,6 @@ class BaseCommands(Cmd):
             print(f"Not found: {str(e)}")
         except requests.RequestException as e:
             print(f"Request error: {str(e)}")
-        except Exception:
-            print_exc()  # Print the full traceback as last resort
         return False
 
     def emptyline(self):
@@ -65,4 +72,7 @@ class BaseCommands(Cmd):
 
     def do_exit(self, arg):
         """Go back a level"""
+        if arg:
+            print("Argument not supported!")
+            return
         return True

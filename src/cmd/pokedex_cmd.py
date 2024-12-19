@@ -121,3 +121,23 @@ class PokedexCommands(BaseCommands):
         pokemon = self.client.get_pokemon(arg)
         moves = [move["move"]["name"] for move in pokemon["moves"]]
         pretty_print_list(moves)
+
+    def do_ability(self, arg):
+        """Get details for an ability: ability <ability>"""
+        arg = arg.lower().strip()
+        if not arg:
+            print("Please provide an ability!")
+            return
+        
+        ability = self.client.get_ability(arg)
+        pretty_print_dict(ability, f"Ability: {pretty_string(ability)}")
+
+    def do_stats(self, arg):
+        """Get stats for a Pokemon: stats <pokemon>"""
+        arg = arg.lower().strip()
+        if not arg:
+            print("Please provide a Pokemon!")
+            return
+
+        stats = self.client.get_stats(arg)
+        pretty_print_dict(stats, f"{pretty_string(arg)} Stats")

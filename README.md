@@ -16,9 +16,11 @@ Pokedex CLI is an interactive command-line tool that acts as a Pokedex by intera
 ### General Commands
 
 - `search <pokemon>`: Validate a Pokemon's name. Useful for finding the API's exact naming convention.
+- `ability <ability>`: Retrieve the ability details for all game versions.
 - `moves <pokemon>`: List all moves available to a specified Pokemon.
 - `move <move name>`: Retrieve detailed information about a specific move.
 - `choose <pokemon>`: Enter a context mode tailored to the given Pokemon.
+- `stats <pokemon>`: Display the Pokemon's base stats.
 
 ### Pokemon Commands
 
@@ -29,6 +31,7 @@ Pokedex CLI is an interactive command-line tool that acts as a Pokedex by intera
 
 #### Version-Specific Commands
 
+- `abilities`: Retrieve the abilities for the version-specific Pokemon.
 - `move <move-name>`: Retrieve detailed information about a specific move.
 - `moves`: List details about the Pokemon's moves, or get more specific:
     - `moves level`: Moves learned by leveling up.

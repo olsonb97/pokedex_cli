@@ -1,7 +1,7 @@
 import requests
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
-from src.misc.util import pretty_string
+from src.misc.util import *
 
 class PokeApiError(Exception):
     """Exception raised for errors in the PokeAPI."""
@@ -77,6 +77,7 @@ class PokeApiClient:
         try:
             response = self.session.get(url, params=params, verify=self.verify_ssl)
             response.raise_for_status()
+            response.encoding = response.apparent_encoding
             return response.json()
         except requests.exceptions.SSLError as e:
             print(f"SSL Error: {e}")
@@ -199,3 +200,16 @@ class PokeApiClient:
             totals[f"Type {i+1}"] = pretty_string(type["type"]["name"])
 
         return totals
+    
+    def get_ability(self, id):
+        ability = self._make_request(f"ability/{id}")
+        entries = ability["flavor_text_entries"]
+        effects = {}
+
+        for entry in entries:
+            if entry["language"]["name"] == "en":
+                version = entry["version_group"]["name"]
+                effect = entry["flavor_text"].replace("\n", " ")
+                effects[version] = effect
+        
+        return effects
