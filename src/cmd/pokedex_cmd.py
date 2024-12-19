@@ -92,7 +92,7 @@ class PokedexCommands(BaseCommands):
         pretty_compare(pokemon_stats)
 
     def complete_compare(self, text, line, begidx, endidx):
-        """Autocomplete Pokemon names for search"""
+        """Autocomplete Pokemon names for compare"""
         text = text.lower().strip().split()
         if not text[0]:
             return list(self.client.pokemon_names)[:50]
