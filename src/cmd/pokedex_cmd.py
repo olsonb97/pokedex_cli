@@ -101,10 +101,11 @@ class PokedexCommands(BaseCommands):
                 names = [name for name in self.client.pokemon_names 
                 if name.startswith(pokemon.lower())]
                 if not names:
-                    print(f"{pokemon} is not a valid Pokemon!")
-                    return
+                    return []
                 else:
                     return names
+        else:
+            return []
     
     def do_moves(self, arg):
         """List all moves for a Pokemon: moves <pokemon>"""
@@ -132,10 +133,11 @@ class PokedexCommands(BaseCommands):
                 names = [name for name in self.client.pokemon_names 
                 if name.startswith(pokemon.lower())]
                 if not names:
-                    print(f"{pokemon} is not a valid Pokemon!")
-                    return
+                    return []
                 else:
                     return names
+        else:
+            return []
 
     def do_ability(self, arg):
         """Get details for an ability: ability <ability>"""
@@ -167,7 +169,8 @@ class PokedexCommands(BaseCommands):
                 names = [name for name in self.client.pokemon_names 
                 if name.startswith(pokemon.lower())]
                 if not names:
-                    print(f"{pokemon} is not a valid Pokemon!")
-                    return
+                    return []
                 else:
                     return names
+        else:
+            return []

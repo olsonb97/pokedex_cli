@@ -24,7 +24,7 @@ class PokemonCommands(BaseCommands):
            disallowed_commands = ['move', 'moves', 'abilities']
            command = line.split()[0] if line.strip() else ''
            if command in disallowed_commands:
-               pretty_message("""This command requires setting the game version first using the 'version' command.
+               pretty_message(f"""This command requires setting the game version first using the 'version' command.
 \nAvailabe versions:""")
                pretty_print_list(self.available_versions)
                return ''
@@ -120,13 +120,18 @@ Use 'moves egg' to list egg moves\n"""
         else:
             print("No moves found! Check version or method.")
 
-    @BaseCommands.noargs
     def do_stats(self, arg):
         """List the stats for chosen pokemon of chosen game version"""
+        if arg.strip():
+            print(f"This command does not accept arguments.")
+            return
         pretty_print_dict(self.stats, f"{self.pokemon_name} Stats")
 
-    @BaseCommands.noargs
     def do_abilities(self, arg):
+        """List the abilities for chosen pokemon of chosen game version"""
+        if arg.strip():
+            print(f"This command does not accept arguments.")
+            return
         abilities = self.pokemon["abilities"]
         totals = {}
 

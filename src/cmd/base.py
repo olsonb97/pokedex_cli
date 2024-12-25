@@ -4,15 +4,6 @@ import requests
 
 class BaseCommands(Cmd):
     """Base class for all commands"""
-
-    def noargs(func):
-        """Decorator to ensure a command method does not accept arguments."""
-        def wrapper(self, arg):
-            if arg.strip():
-                print(f"This command does not accept arguments.")
-                return
-            return func(self, arg)
-        return wrapper
         
     def onecmd(self, line):
         """Override Cmd.onecmd to handle exceptions and expand help"""
